@@ -1,28 +1,21 @@
-const checkValidRange=(value)=> {
-  if ( typeof value !='number') {
-    throw new Error(`В функцию getInterval были переданы невалидные параметры. Параметр ${value} должен содержать только числовые значения`);
-  }
-}
+const getMessageForIsNotNumberArray = (paramName) => `В функцию getInterval были переданы невалидные параметры. Параметр ${paramName} должен содержать только числовые значения`;
 
-const checkValidArr=(arr)=> {
-  for (const iterator of arr) {
-    if ( typeof iterator !='number') {
-      throw new Error(`В функцию getInterval были переданы невалидные параметры. Параметр ${arr} должен содержать только числовые значения`);
-    }
-  }
-}
+const getMessageForIsNotNumber = (paramName) => `В функцию getInterval были переданы невалидные параметры. Параметр ${paramName} должен быть числом`;
+
+const isNumber=(value)=>( typeof value =='number' && !Number.isNaN(value));
+   
+const isNumberArray = (numberArr) => Array.isArray(numberArr) && 
+!(numberArr.some((item) => !isNumber(item)));
+
+const errorHandling = (arr, from, to) => {
+  if (!isNumberArray(arr)) throw new Error(getMessageForIsNotNumberArray('arr'));
+  if (!isNumber(from)) throw new Error(getMessageForIsNotNumber('from'));
+  if (!isNumber(to)) throw new Error(getMessageForIsNotNumber('to'));
+};
 
 const getInterval=(arr,from,to)=> {
-let newArr=[];
-checkValidArr(arr);
-checkValidRange(from);
-checkValidRange(to);
-if (from<to) {
-  newArr=arr.filter(el=>el>=from && el<=to);
-} else if (from>to) {
-  newArr=arr.filter(el=>el>=to && el<=from);
-} else {
-  return null;
-}
-return newArr;
+  errorHandling(arr,from,to);
+  const _from = from <= to ? from : to;
+  const _to = to >= from ? to : from;
+  return arr.filter((item) => item >= _from && item <= _to);
 }
