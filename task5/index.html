@@ -18,10 +18,10 @@
         <li class="cars__item">
           <div class="car car--civil"><a href="#">Civil car</a></div>
         </li>
-        <li>
+        <li class="cars__item">
           <div class="car car--military"><a href="#">Military car</a></div>
         </li>
-        <li>
+        <li class="cars__item">
           <div class="car car--sport"><a href="#">Sport car</a></div>
         </li>
       </ul>
@@ -48,17 +48,32 @@
             <div class="plus"></div>
           </li>
         </ul>
+        <fieldset class="tab">
+          <legend>Comparison table</legend>
+          <table id="compareTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Power Reserve</th>
+                <th>Durability</th>
+                <th>Speed</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </fieldset>
       </div>
     </div>
+    <button id="1">Reset game</button>
+    <button id="2">Compare</button>
+    <button id="3">Find opponents</button>
     <div>
       <h2 class="opponents__title">Opponents cars</h2>
       <div class="opponents">
       </div>
     </div>
   </div>
-  <button id="1">Reset game</button>
-  <button id="2">Start race</button>
-  <button id="3">Find opponents</button>
+
   <script src="script.js"></script>
 </body>
 
