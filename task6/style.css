@@ -1,0 +1,13 @@
+html {
+  padding: 50px;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  column-gap: 10px;
+}
+
+.content__article {
+  padding: 10px;
+}
