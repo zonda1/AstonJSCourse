@@ -1,40 +1,25 @@
 
-// const URL='https://jsonplaceholder.typicode.com/posts?_limit=10&_page=1';
-
 class Service {
   _URL='https://jsonplaceholder.typicode.com/';
 
-fetchFunc=async(url)=>{
-  const res=await fetch(`${this._URL}${url}`)
-  if (!res.ok) {
-    throw new Error(`Could not fetch ${url}, received ${res.status}`);
+  fetchFunc=async(url)=>{
+    const res=await fetch(`${this._URL}${url}`)
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${url}, received ${res.status}`);
+    }
+    return res;
   }
-  return res;
-}
 
-
-getResource=async(recourceName,...args)=>{
-  const [_limit,_page]=args;
-  let response;
-  if (_limit && _page) {
-    const url=`${recourceName}?_limit=${_limit}&_page=${_page}`;
-    response = await this.fetchFunc(url);
-  } else if (_limit && _page==undefined) {
-    response = await this.fetchFunc(`${recourceName}?_limit=${_limit}&_page=1`);
-  } else {
-    response=await this.fetchFunc(`${recourceName}?_limit=10&_page=1`);
-  }
-  const headers = new Map(response.headers);
-  const data = await response.json();
-  return {
+  getResource=async(recourceName,_pageNum=1,_limitContent=10)=>{
+    const response=await this.fetchFunc(`${recourceName}?_limit=${_limitContent}&_page=${_pageNum}`);
+    const headers = new Map(response.headers);
+    const data = await response.json();
+    return {
       data,
       total: headers.get('x-total-count') || null
-  };
+    };
+  }
 }
-}
-
-
-
 class View {
   pageContent=document.querySelector('.content');
   pagination=document.querySelector('.pagination');
@@ -54,7 +39,6 @@ class View {
         this.createTodo(item);
     }
   }
-
 
   createPost({id,title,body}) {
     const div=document.createElement(`div`);
@@ -100,20 +84,19 @@ class View {
     this.pageContent.appendChild(item);
   }
 
-  displayPagination({total}) {
-   
-    const pageAmount=Math.floor(+total/10);
-    console.log(pageAmount);
-    let i=0;
-    while (i<pageAmount) {
-      const li=document.createElement(`li`);
-      li.classList.add('page-item');
-      li.innerHTML=`
-      <a class="page-link" data-page="page" href="#">${i+1}</a>
-      `;
-      this.pagination.insertBefore(li,this.pagination.lastElementChild);
-      i++;
-    }
+  displayPagination(page,total) {
+    const lastPage=Math.floor(+total/10);
+    this.pagination.innerHTML = `
+    <a href="${page - 1 ? page - 1 : 1}">Previous</a>
+        ${page < 3 ? '' : '<a href="1">1'}
+        ${page < 4 ? '' : '</a><span>...</span>'}
+        ${page < 2 ? '' : `<a href="${page - 1}">${page - 1}</a>`}
+        <a href="${page}" class="current-page">${page}</a>
+        ${page > lastPage - 2 ? '' : `<a href="${page + 1}">${page + 1}</a>`}
+        ${page > lastPage - 3 ? '' : '<span>...</span>'}
+        ${page > lastPage - 1 ? '' : `<a href="${lastPage}">${lastPage}</a>`}
+    <a href="${page + 1 < lastPage ? page + 1 : lastPage}">Next</a>
+  `;
   }
 
   clearList() {
@@ -121,16 +104,12 @@ class View {
   }
 
   clearPagination() {
-    const pageLinks=[...this.pagination.children];
-    pageLinks.forEach(el => {
-      if (el.firstElementChild.dataset.page) el.remove();
-    });
+    this.pagination.innerHTML='';
   }
 }
 
 const service = new Service();
 const view = new View();
-
 
 const menu=document.querySelector('.menu');
 
@@ -141,34 +120,39 @@ function updateState(state) {
   if (!state.pageNumber) {
     state.pageNumber = 1;
   }
-  service.getResource(state.page).then((res) => {
-    console.log(res);
-    view.displayPagination(res);
+  service.getResource(state.page,state.pageNumber).then((res) => {
+    view.displayPagination(state.pageNumber,res.total);
     res.data.forEach((item) => {
       view.createItem(state.page, item);
     });
-    // view.setViewPagination(state.pageNumber, res.total);
   });
 }
 
+view.pagination.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'A') return;
+  e.preventDefault();
+  let state = {
+    page: location.href.match(/comments|posts|photos|todos/gm)[0],
+    pageNumber: +e.target.getAttribute('href'),
+  };
+  history.pushState(state, '', `?/page-${state.pageNumber}`);
+  updateState(state);
+});
 
-// let lastCurrentPage;
+let lastCurrentPage;
 menu.addEventListener('click', (e) => {
   if (e.target.tagName !== 'A') return;
-  // lastCurrentPage?.classList.remove('current-page');
-  // e.target.classList.add('current-page');
-  // lastCurrentPage = e.target;
+  lastCurrentPage?.classList.remove('current-page');
+  e.target.classList.add('current-page');
+  lastCurrentPage = e.target;
   e.preventDefault();
   let state = {
     page: e.target.getAttribute('href'),
   };
-  // history.pushState(state, '', state.page + '?/page-1');
+  history.pushState(state, '', state.page + '?/page-1');
   updateState(state);
 });
 
-
-
-// service.getResource('posts')
-//   .then((result) => {
-//       console.log('data', result);
-//   });
+window.addEventListener('popstate', (e) => {
+  updateState(e.state);
+});

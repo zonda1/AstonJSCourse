@@ -2,12 +2,54 @@ html {
   padding: 50px;
 }
 
+a {
+  text-decoration: none;
+}
+
+.menu {
+  margin-bottom: 10px;
+}
+
+.menu__link {
+  font-size: 25px;
+  font-weight: 600;
+  color:brown;
+  margin-right:20px ;
+}
+
+nav>a {
+  font-size: 25px;
+  font-weight: 600;
+  color:cornflowerblue;
+  margin-right:10px ;
+}
+
 .content {
   display: grid;
   grid-template-columns: repeat(3,1fr);
   column-gap: 10px;
+  row-gap: 10px;
+  margin-bottom: 10px;
 }
 
-.content__article {
+.post,
+.comment,
+.photo,
+.todo {
   padding: 10px;
+  border: 2px solid black;
+}
+
+.completed {
+  background-color: #d2ffd2;
+}
+
+.incomleted {
+  background-color: #ffbcbc;;
+}
+
+.current-page {
+  color: red;
+  font-weight: bold;
+  font-size: 30px;
 }
