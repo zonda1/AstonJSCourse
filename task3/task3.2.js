@@ -1,14 +1,12 @@
-const addElementsToArray=(arr,...index)=> {
-  if (index<0 || Number.isInteger(index)) {
-    throw Error ('the index cannot be a negative number or a fractional number');
-  }
-  let newArr=[...arr];
-  function inner(...elem) {
-    if (index==false || index>arr.length) {
-      return newArr.concat(elem);
-    }
-    newArr.splice(index,0,...elem);
-    return newArr;
-  }
-  return inner;
-}
+const addElementsToArray = (arr, index) => (...args) => {
+  let _index = index ?? arr.length;
+  if (
+      !Number.isInteger(_index)
+      || _index < 0
+  ) throw new Error('the index cannot be a negative number or a fractional number');
+  return [
+      ...arr.slice(0, _index),
+      ...args,
+      ...arr.slice(_index),
+  ];
+};
