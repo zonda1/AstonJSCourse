@@ -1,11 +1,9 @@
 const deleteElementFromArray=(arr,el)=>{
   for (let i = 0; i < arr.length; i++) {
     if (arr[i]==el) {
-      let newArr=[...arr];
-      newArr.splice(i,1);
-      return newArr;
+      return [...arr.slice(0,i),
+      ...arr.slice(i+1)]
     }
-    continue;
   }
   return arr;
 }
