@@ -18,5 +18,5 @@ const createPerson=({...obj})=>{
       return this;
     }
   }
-  return {...obj,...newObj};
+  return Object.seal({...obj,...newObj});
 }
